@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>UsersNavigator.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #2aacb8;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UsersNavigator.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">File</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">FileInputStream</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">sql</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalDate</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javax</span><span class="s2">.</span><span class="s1">swing</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">awt</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">ActionEvent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">sql</span><span class="s2">.*;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">UsersNavigator </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s2">{</span>
+
+    <span class="s0">private </span><span class="s1">JTextField txtId</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JTextField txtUsername</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JTextField txtPassword</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">JButton btnPrevious</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JButton btnNext</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">Connection conn</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt;&gt; </span><span class="s1">data </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+
+    <span class="s0">private int </span><span class="s1">currentIndex </span><span class="s2">= </span><span class="s3">0</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">UsersNavigator</span><span class="s2">() {</span>
+        <span class="s1">connectDB</span><span class="s2">();</span>
+        <span class="s1">loadData</span><span class="s2">();</span>
+        <span class="s1">createUI</span><span class="s2">();</span>
+        <span class="s1">showRecord</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">connectDB</span><span class="s2">() {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">conn </span><span class="s2">= </span><span class="s1">DriverManager</span><span class="s2">.</span><span class="s1">getConnection</span><span class="s2">(</span>
+                    <span class="s4">&quot;jdbc:mysql://localhost/classicmodels&quot;</span><span class="s2">,</span>
+                    <span class="s4">&quot;root&quot;</span><span class="s2">,</span>
+                    <span class="s4">&quot;My$ql_$erveR@2024&quot;</span>
+            <span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">SQLException e</span><span class="s2">) {</span>
+            <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">this</span><span class="s2">, </span><span class="s4">&quot;Database connection failed&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">loadData</span><span class="s2">() {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">Statement stmt </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">createStatement</span><span class="s2">();</span>
+            <span class="s1">ResultSet rs </span><span class="s2">= </span><span class="s1">stmt</span><span class="s2">.</span><span class="s1">executeQuery</span><span class="s2">(</span><span class="s4">&quot;SELECT * FROM Users&quot;</span><span class="s2">);</span>
+
+            <span class="s0">while </span><span class="s2">(</span><span class="s1">rs</span><span class="s2">.</span><span class="s1">next</span><span class="s2">()) {</span>
+
+                <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">row </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;();</span>
+
+                <span class="s1">row</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">String</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">rs</span><span class="s2">.</span><span class="s1">getInt</span><span class="s2">(</span><span class="s4">&quot;id&quot;</span><span class="s2">)));</span>
+                <span class="s1">row</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">rs</span><span class="s2">.</span><span class="s1">getString</span><span class="s2">(</span><span class="s4">&quot;username&quot;</span><span class="s2">));</span>
+                <span class="s1">row</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">rs</span><span class="s2">.</span><span class="s1">getString</span><span class="s2">(</span><span class="s4">&quot;password&quot;</span><span class="s2">));</span>
+
+                <span class="s1">data</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">row</span><span class="s2">);</span>
+            <span class="s2">}</span>
+
+            <span class="s1">rs</span><span class="s2">.</span><span class="s1">close</span><span class="s2">();</span>
+            <span class="s1">stmt</span><span class="s2">.</span><span class="s1">close</span><span class="s2">();</span>
+
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">SQLException e</span><span class="s2">) {</span>
+            <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">this</span><span class="s2">, </span><span class="s4">&quot;Error loading data&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">createUI</span><span class="s2">() {</span>
+
+        <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;Users Navigator&quot;</span><span class="s2">);</span>
+        <span class="s1">setSize</span><span class="s2">(</span><span class="s3">350</span><span class="s2">, </span><span class="s3">200</span><span class="s2">);</span>
+        <span class="s1">setDefaultCloseOperation</span><span class="s2">(</span><span class="s1">EXIT_ON_CLOSE</span><span class="s2">);</span>
+        <span class="s1">setLocationRelativeTo</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+
+        <span class="s1">JPanel panel </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JPanel</span><span class="s2">(</span><span class="s0">new </span><span class="s1">GridLayout</span><span class="s2">(</span><span class="s3">4</span><span class="s2">, </span><span class="s3">2</span><span class="s2">, </span><span class="s3">5</span><span class="s2">, </span><span class="s3">5</span><span class="s2">));</span>
+
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;ID:&quot;</span><span class="s2">));</span>
+        <span class="s1">txtId </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">txtId</span><span class="s2">);</span>
+
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Username:&quot;</span><span class="s2">));</span>
+        <span class="s1">txtUsername </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">txtUsername</span><span class="s2">);</span>
+
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s0">new </span><span class="s1">JLabel</span><span class="s2">(</span><span class="s4">&quot;Password:&quot;</span><span class="s2">));</span>
+        <span class="s1">txtPassword </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">txtPassword</span><span class="s2">);</span>
+
+        <span class="s1">btnPrevious </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Previous&quot;</span><span class="s2">);</span>
+        <span class="s1">btnNext </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JButton</span><span class="s2">(</span><span class="s4">&quot;Next&quot;</span><span class="s2">);</span>
+
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">btnPrevious</span><span class="s2">);</span>
+        <span class="s1">panel</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">btnNext</span><span class="s2">);</span>
+
+        <span class="s1">add</span><span class="s2">(</span><span class="s1">panel</span><span class="s2">);</span>
+
+        <span class="s1">btnPrevious</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s1">::previousRecord</span><span class="s2">);</span>
+        <span class="s1">btnNext</span><span class="s2">.</span><span class="s1">addActionListener</span><span class="s2">(</span><span class="s0">this</span><span class="s1">::nextRecord</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">showRecord</span><span class="s2">() {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">data</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) </span><span class="s0">return</span><span class="s2">;</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">row </span><span class="s2">= </span><span class="s1">data</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">currentIndex</span><span class="s2">);</span>
+
+        <span class="s1">txtId</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">row</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s3">0</span><span class="s2">));</span>
+        <span class="s1">txtUsername</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">row</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s3">1</span><span class="s2">));</span>
+        <span class="s1">txtPassword</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">row</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s3">2</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">previousRecord</span><span class="s2">(</span><span class="s1">ActionEvent e</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">currentIndex </span><span class="s2">&gt; </span><span class="s3">0</span><span class="s2">) {</span>
+            <span class="s1">currentIndex</span><span class="s2">--;</span>
+            <span class="s1">showRecord</span><span class="s2">();</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">nextRecord</span><span class="s2">(</span><span class="s1">ActionEvent e</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">currentIndex </span><span class="s2">&lt; </span><span class="s1">data</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() - </span><span class="s3">1</span><span class="s2">) {</span>
+            <span class="s1">currentIndex</span><span class="s2">++;</span>
+            <span class="s1">showRecord</span><span class="s2">();</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public static void </span><span class="s1">main</span><span class="s2">(</span><span class="s1">String</span><span class="s2">[] </span><span class="s1">args</span><span class="s2">) {</span>
+        <span class="s1">SwingUtilities</span><span class="s2">.</span><span class="s1">invokeLater</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+            <span class="s0">new </span><span class="s1">UsersNavigator</span><span class="s2">().</span><span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s0">class </span><span class="s1">RegisterForm </span><span class="s0">extends </span><span class="s1">JFrame </span><span class="s2">{</span>
+
+    <span class="s0">private </span><span class="s1">JTextField txtUsername</span><span class="s2">, </span><span class="s1">txtFirstName</span><span class="s2">, </span><span class="s1">txtLastName</span><span class="s2">, </span><span class="s1">txtEmail</span><span class="s2">, </span><span class="s1">txtDOB</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JPasswordField txtPassword</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">JLabel lblPhoto</span><span class="s2">;</span>
+    <span class="s0">private byte</span><span class="s2">[] </span><span class="s1">photoBytes</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">Connection conn</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">RegisterForm</span><span class="s2">() {</span>
+        <span class="s1">connectDB</span><span class="s2">();</span>
+        <span class="s1">createUI</span><span class="s2">();</span>
+        <span class="s1">setVisible</span><span class="s2">(</span><span class="s0">true</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">connectDB</span><span class="s2">() {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">conn </span><span class="s2">= </span><span class="s1">DriverManager</span><span class="s2">.</span><span class="s1">getConnection</span><span class="s2">(</span>
+                    <span class="s4">&quot;jdbc:mysql://localhost/classicmodels&quot;</span><span class="s2">,</span>
+                    <span class="s4">&quot;root&quot;</span><span class="s2">,</span>
+                    <span class="s4">&quot;My$ql_$erveR@2024&quot;</span>
+            <span class="s2">);</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">SQLException e</span><span class="s2">) {</span>
+            <span class="s1">JOptionPane</span><span class="s2">.</span><span class="s1">showMessageDialog</span><span class="s2">(</span><span class="s0">this</span><span class="s2">, </span><span class="s4">&quot;DB connection failed&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">createUI</span><span class="s2">() {</span>
+
+        <span class="s1">setTitle</span><span class="s2">(</span><span class="s4">&quot;User Registration&quot;</span><span class="s2">);</span>
+        <span class="s1">setSize</span><span class="s2">(</span><span class="s3">400</span><span class="s2">, </span><span class="s3">400</span><span class="s2">);</span>
+        <span class="s1">setLayout</span><span class="s2">(</span><span class="s0">new </span><span class="s1">GridLayout</span><span class="s2">(</span><span class="s3">9</span><span class="s2">,</span><span class="s3">2</span><span class="s2">,</span><span class="s3">5</span><span class="s2">,</span><span class="s3">5</span><span class="s2">));</span>
+        <span class="s1">setLocationRelativeTo</span><span class="s2">(</span><span class="s0">null</span><span class="s2">);</span>
+
+        <span class="s1">txtUsername </span><span class="s2">= </span><span class="s0">new </span><span class="s1">JTextField</span><span class="s2">();</span>
+    <span class="s2">}</span>
+<span class="s2">}</span></pre>
+</body>
+</html>
